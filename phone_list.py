@@ -1,13 +1,20 @@
-import os
 import csv
+import os
+from typing import Callable
 
-INFO: list = ['id', 'Name', 'Surname', 'Last name', 'Company', 'Work phone', 'Home phone']
+INFO: list[str] = ['id', 'Name', 'Surname', 'Last name',
+                   'Company', 'Work phone', 'Home phone']
+
 with open('phone_list.csv', 'r') as file:
     COUNTER: int = int(file.readlines()[-1].split(',')[0])
     print(COUNTER)
 
 
-def write_row():
+def write_row() -> None:
+    '''
+    Function to write a new line to a file.
+    No parametrs.
+    '''
     with open('phone_list.csv', 'a') as file:
         global COUNTER
         name: str = input('Input name: ')
@@ -18,15 +25,22 @@ def write_row():
         home_phone: str = input('Input home phone: ')
         csv_writer = csv.writer(file, lineterminator="\r")
         COUNTER += 1
-        csv_writer.writerow([COUNTER, name, surname, last_name, company, work_phone, home_phone])
+        csv_writer.writerow([COUNTER, name, surname, last_name,
+                             company, work_phone, home_phone])
 
 
-def read_row():
+def read_row() -> None:
+    '''
+    Function for reading records in a file with a
+    specified number of lines.
+    No parametrs.
+    '''
     with open('phone_list.csv', 'r') as file:
-        csv_reader: reader = csv.reader(file)
+        csv_reader = csv.reader(file)
         state = True
         while state:
-            amount: int = int(input('Enter the number of lines you want to read: '))
+            amount: int = int(input('Enter the number of lines'
+                                    'you want to read: '))
             for _ in range(amount):
                 try:
                     print(next(csv_reader))
@@ -38,10 +52,16 @@ def read_row():
                 state = False
 
 
-def search():
+def search() -> None:
+    '''
+    Function for searching for strings that contain one
+    or more input values.
+    No parametrs.
+    '''
     with open('phone_list.csv', 'r') as file:
-        values: set = set()
-        value: str = input('Input value for search. If you want to stop, enter - "stop". ')
+        values: set[str] = set()
+        value: str = input('Input value for search.'
+                           'If you want to stop, enter - "stop". ')
         while value != 'stop':
             values.add(value)
             value = input('Input value for search: ')
@@ -51,12 +71,18 @@ def search():
                 print(','.join(line))
 
 
-def edit():
+def edit() -> None:
+    '''
+    Function for editing one specified value in a line with
+    the specified id in the file.
+    No parametrs.
+    '''
     with open('phone_list.csv', 'r') as file:
         num_of_row: int = int(input('Enter id of line: '))
         csv_reader = file.readlines()
         edit_row = csv_reader[num_of_row].split(',')
-        key = input('What do you want to change: 1 - name, 2 - surname, 3 - last name, '
+        key = input('What do you want to change: 1 - name, '
+                    '2 - surname, 3 - last name, '
                     '4 - company, 5 - work number, 6 - home number: ')
         value = input('Input value for change: ')
         edit_row[int(key)] = value
@@ -65,8 +91,8 @@ def edit():
             f.writelines(csv_reader)
 
 
-def main():
-    actions: dict = {
+def main() -> None:
+    actions: dict[str, Callable[[], None]] = {
         'r': read_row,
         'a': write_row,
         's': search,
@@ -74,8 +100,9 @@ def main():
     }
     while True:
         choose: str = input('Choose what you want to do and click the button:'
-                            'read - "r", edit - "e", search - "s", add new - "a".'
-                            'If you want to finish, write the "stop".\n')
+                            'read - "r", edit - "e", search - "s", '
+                            'add new - "a". If you want to finish,'
+                            'write the "stop".\n')
         if choose == "stop":
             break
         actions[choose]()
@@ -84,7 +111,7 @@ def main():
 if __name__ == '__main__':
     if not os.path.exists('phone_list.csv'):
         with open('phone_list.csv', 'w+') as file:
-            csv_writer = csv.DictWriter(file, fieldnames=INFO, lineterminator="\r")
+            csv_writer = csv.DictWriter(file, fieldnames=INFO,
+                                        lineterminator="\r")
             csv_writer.writeheader()
     main()
-
